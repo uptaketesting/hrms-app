@@ -51,7 +51,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from client directory
-app.use(express.static(path.join(__dirname, '../../client')));
+const clientPath = path.join(__dirname, '../../client');
+console.log('[SERVER] Serving static files from:', clientPath);
+app.use(express.static(clientPath));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
