@@ -5,9 +5,7 @@
   "private": true,
   "scripts": {
     "install:all": "npm install && cd client && npm install && cd ../server && npm install",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:server": "cd server && nodemon --watch src --watch config --watch ../shared src/server.js",
-    "dev:client": "cd server && nodemon --watch ../client src/server.js",
+    "dev": "cd server && nodemon --watch src --watch config --watch ../shared --watch ../client src/server.js",
     "start": "cd server && node src/server.js",
     "lint": "eslint client/src server/src shared",
     "test": "jest --coverage",
