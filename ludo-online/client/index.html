@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Play Ludo online with friends in real-time">
+  <meta name="theme-color" content="#4CAF50">
+  
+  <title>Ludo Online - Real-Time Multiplayer Game</title>
+  
+  <!-- Preload critical assets -->
+  <link rel="preconnect" href="wss://">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Favicon (inline SVG) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
+  
+  <!-- PWA Manifest (optional) -->
+  <link rel="manifest" href="data:application/json;base64,eyJ7Im5hbWUiOiJMdWRvIE9ubGluZSIsInNob3J0X25hbWUiOiJMdWRvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJzdGFydF91cmwiOiIvIn19">
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="screen active">
+    <div class="loading-content">
+      <div class="logo">🎲</div>
+      <h1>Ludo Online</h1>
+      <p class="loading-text">Loading...</p>
+      <div class="loading-spinner"></div>
+    </div>
+  </div>
+  
+  <!-- Login Screen -->
+  <div id="login-screen" class="screen">
+    <div class="login-container">
+      <div class="logo-large">🎲</div>
+      <h1>Ludo Online</h1>
+      <p class="subtitle">Real-Time Multiplayer Game</p>
+      
+      <form id="login-form" class="login-form">
+        <div class="form-group">
+          <label for="username">Enter Your Name</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            placeholder="Player 1" 
+            maxlength="20"
+            autocomplete="off"
+            required
+          >
+        </div>
+        <button type="submit" class="btn btn-primary btn-large">
+          Play Now
+        </button>
+      </form>
+      
+      <p class="terms-note">
+        By playing, you agree to fair play rules. No cheating!
+      </p>
+    </div>
+  </div>
+  
+  <!-- Lobby Screen -->
+  <div id="lobby-screen" class="screen">
+    <div class="lobby-container">
+      <header class="lobby-header">
+        <div class="player-info">
+          <span class="player-avatar">👤</span>
+          <span id="player-name-display">Player</span>
+        </div>
+        <button id="logout-btn" class="btn btn-secondary btn-small">Logout</button>
+      </header>
+      
+      <main class="lobby-main">
+        <div class="lobby-section">
+          <h2>Create or Join Room</h2>
+          
+          <div class="room-actions">
+            <button id="create-room-btn" class="btn btn-primary">
+              Create New Room
+            </button>
+            
+            <div class="join-room-form">
+              <input 
+                type="text" 
+                id="room-code-input" 
+                placeholder="Room Code (e.g., ABC123)"
+                maxlength="8"
+                pattern="[A-Za-z0-9]{4,8}"
+              >
+              <button id="join-room-btn" class="btn btn-secondary">
+                Join
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="lobby-section">
+          <h2>Available Rooms</h2>
+          <button id="refresh-rooms-btn" class="btn btn-text btn-small">
+            🔄 Refresh
+          </button>
+          <div id="rooms-list" class="rooms-list">
+            <p class="empty-message">No rooms available. Create one!</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  
+  <!-- Room Screen -->
+  <div id="room-screen" class="screen">
+    <div class="room-container">
+      <header class="room-header">
+        <div class="room-info">
+          <span class="room-label">Room:</span>
+          <span id="room-code-display" class="room-code">------</span>
+          <button id="copy-room-code-btn" class="btn btn-icon" title="Copy code">📋</button>
+        </div>
+        <button id="leave-room-btn" class="btn btn-danger btn-small">Leave</button>
+      </header>
+      
+      <main class="room-main">
+        <div class="players-area">
+          <h3>Players (<span id="player-count">1</span>/4)</h3>
+          <div id="players-list" class="players-list">
+            <!-- Player cards inserted here -->
+          </div>
+        </div>
+        
+        <div class="room-actions-area">
+          <button id="start-game-btn" class="btn btn-primary btn-large" disabled>
+            Start Game
+          </button>
+          <p class="room-status" id="room-status">Waiting for players...</p>
+        </div>
+      </main>
+    </div>
+  </div>
+  
+  <!-- Game Screen -->
+  <div id="game-screen" class="screen">
+    <div class="game-container">
+      <header class="game-header">
+        <div class="game-info">
+          <span id="game-room-code" class="room-code-small">Room: ------</span>
+          <span id="connection-status" class="connection-status connected">●</span>
+        </div>
+        <button id="quit-game-btn" class="btn btn-secondary btn-small">Quit</button>
+      </header>
+      
+      <main class="game-main">
+        <!-- Game Board -->
+        <div id="game-board" class="game-board">
+          <!-- Board rendered by JavaScript -->
+        </div>
+        
+        <!-- Game Controls -->
+        <div class="game-controls">
+          <div class="turn-indicator">
+            <span id="current-player-indicator" class="player-turn-badge">
+              Red's Turn
+            </span>
+          </div>
+          
+          <div class="dice-area">
+            <div id="dice-container" class="dice-container">
+              <div id="dice" class="dice">
+                <div class="dice-face dice-face-1">●</div>
+                <div class="dice-face dice-face-2">●</div>
+                <div class="dice-face dice-face-3">●</div>
+                <div class="dice-face dice-face-4">●</div>
+                <div class="dice-face dice-face-5">●</div>
+                <div class="dice-face dice-face-6">●</div>
+              </div>
+            </div>
+            <button id="roll-dice-btn" class="btn btn-primary btn-large" disabled>
+              Roll Dice
+            </button>
+          </div>
+          
+          <div id="game-message" class="game-message"></div>
+        </div>
+        
+        <!-- Players Panel -->
+        <aside class="players-panel">
+          <h4>Players</h4>
+          <div id="game-players-list" class="game-players-list">
+            <!-- Player status inserted here -->
+          </div>
+        </aside>
+      </main>
+    </div>
+  </div>
+  
+  <!-- Game Over Modal -->
+  <div id="game-over-modal" class="modal">
+    <div class="modal-content">
+      <h2>🎉 Game Over!</h2>
+      <div id="winner-display" class="winner-display">
+        <!-- Winner info inserted here -->
+      </div>
+      <div class="modal-actions">
+        <button id="play-again-btn" class="btn btn-primary">Play Again</button>
+        <button id="back-to-lobby-btn" class="btn btn-secondary">Back to Lobby</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Error Toast -->
+  <div id="error-toast" class="toast error">
+    <span id="error-message">Error message</span>
+    <button class="toast-close" onclick="this.parentElement.classList.remove('show')">×</button>
+  </div>
+  
+  <!-- Scripts -->
+  <script src="../shared/protocol.js"></script>
+  <script src="src/network/WebSocketClient.js"></script>
+  <script src="src/core/GameRenderer.js"></script>
+  <script src="src/core/InputHandler.js"></script>
+  <script src="src/core/GameLoop.js"></script>
+  <script src="src/ui/UIManager.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>

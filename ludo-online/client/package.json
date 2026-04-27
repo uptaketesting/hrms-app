@@ -1,0 +1,13 @@
+{
+  "name": "ludo-client",
+  "version": "1.0.0",
+  "description": "Ludo game client - Vanilla JS, no frameworks",
+  "private": true,
+  "scripts": {
+    "build": "echo 'No build step - vanilla JS'",
+    "lint": "eslint src"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  }
+}
