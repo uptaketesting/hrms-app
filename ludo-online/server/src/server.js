@@ -52,8 +52,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from client directory
 const clientPath = path.join(__dirname, '../../client');
+const sharedPath = path.join(__dirname, '../../shared');
 console.log('[SERVER] Serving static files from:', clientPath);
 app.use(express.static(clientPath));
+
+// Serve shared protocol files
+app.use('/shared', express.static(sharedPath));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
